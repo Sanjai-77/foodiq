@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NutriGuide Dashboard — Generate personalized 30-day meal plans based on your budget and fitness goals.">
+  <title>NutriGuide — Dashboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a class="navbar-brand" href="/dashboard.html">
+        <div class="navbar-logo"><i class="fa-solid fa-leaf"></i></div>
+        <div><div class="navbar-title">NutriGuide</div><div class="navbar-subtitle">Personalized Meal Planner</div></div>
+      </a>
+      <div class="navbar-nav" id="navLinks">
+        <a class="nav-link active" href="/dashboard.html">Dashboard</a>
+        <a class="nav-link" href="#sectionMealPlan">Meal Plan</a>
+        <a class="nav-link" href="/nutrition.html">Nutrition Tracker</a>
+      </div>
+      <div class="navbar-user">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <button class="btn-logout" id="logoutBtn">Sign Out</button>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero / Config -->
+  <section class="hero-section page-transition" id="sectionDashboard">
+    <div class="container hero-content">
+      <h2 class="hero-title">Plan Your <span>Perfect Month</span></h2>
+      <p class="hero-subtitle">Enter your body metrics, fitness goal, and monthly budget — we'll generate a personalized 30-day meal plan powered by real IFCT nutritional data.</p>
+      <div class="config-card" id="userConfigCard">
+        <div class="config-grid">
+          <div class="config-field"><label for="ageInput">Age</label><input type="number" id="ageInput" class="form-input" placeholder="e.g. 25" min="10" max="80"></div>
+          
+          <div class="config-field">
+            <label>Gender</label>
+            <div class="custom-select" tabindex="0">
+              <input type="hidden" id="genderSelect" value="">
+              <div class="cs-selected"><span class="cs-text">Select Gender</span> <i class="fa-solid fa-chevron-down"></i></div>
+              <div class="cs-options">
+                <div class="cs-option" data-value="male"><i class="fa-solid fa-person"></i> Male</div>
+                <div class="cs-option" data-value="female"><i class="fa-solid fa-person-dress"></i> Female</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-field"><label for="heightInput">Height (cm)</label><input type="number" id="heightInput" class="form-input" placeholder="175" min="100" max="250"></div>
+          <div class="config-field"><label for="weightInput">Weight (kg)</label><input type="number" id="weightInput" class="form-input" placeholder="70" min="30" max="200"></div>
+          
+          <div class="config-field">
+            <label>Activity Level</label>
+            <div class="custom-select" tabindex="0">
+              <input type="hidden" id="activitySelect" value="">
+              <div class="cs-selected"><span class="cs-text">Select Activity</span> <i class="fa-solid fa-chevron-down"></i></div>
+              <div class="cs-options">
+                <div class="cs-option" data-value="low"><i class="fa-solid fa-person-walking"></i> Low Activity</div>
+                <div class="cs-option" data-value="moderate"><i class="fa-solid fa-person-running"></i> Moderate</div>
+                <div class="cs-option" data-value="high"><i class="fa-solid fa-dumbbell"></i> High</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-field">
+            <label>Fitness Goal</label>
+            <div class="custom-select" tabindex="0">
+              <input type="hidden" id="goalSelect" value="">
+              <div class="cs-selected"><span class="cs-text">Select Goal</span> <i class="fa-solid fa-chevron-down"></i></div>
+              <div class="cs-options">
+                <div class="cs-option" data-value="weight-loss"><i class="fa-solid fa-arrow-trend-down"></i> Weight Loss</div>
+                <div class="cs-option" data-value="maintenance"><i class="fa-solid fa-scale-balanced"></i> Maintenance</div>
+                <div class="cs-option" data-value="muscle-gain"><i class="fa-solid fa-arrow-trend-up"></i> Muscle Gain</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-field"><label for="budgetInput">Monthly Budget (₹)</label><input type="number" id="budgetInput" class="form-input" placeholder="5000" min="1500" max="50000"></div>
+          
+          <div class="config-field">
+            <label>Diet Preference</label>
+            <div class="custom-select" tabindex="0">
+              <input type="hidden" id="dietSelect" value="">
+              <div class="cs-selected"><span class="cs-text">Select Diet</span> <i class="fa-solid fa-chevron-down"></i></div>
+              <div class="cs-options">
+                <div class="cs-option" data-value="veg"><i class="fa-solid fa-leaf"></i> Vegetarian</div>
+                <div class="cs-option" data-value="nonveg"><i class="fa-solid fa-drumstick-bite"></i> Non-Vegetarian</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bmr-preview" id="bmrPreview">
+          <div class="bmr-item"><span class="bmr-label">BMR</span><span class="bmr-value" id="bmrValue">—</span></div>
+          <div class="bmr-divider"></div>
+          <div class="bmr-item"><span class="bmr-label">TDEE</span><span class="bmr-value" id="tdeeValue">—</span></div>
+          <div class="bmr-divider"></div>
+          <div class="bmr-item"><span class="bmr-label">Target</span><span class="bmr-value highlight" id="targetCalValue">—</span></div>
+          <div class="bmr-divider"></div>
+          <div class="bmr-item"><span class="bmr-label">Daily Budget</span><span class="bmr-value" id="dailyBudgetValue">—</span></div>
+        </div>
+        <div class="price-status" id="priceStatus" style="display:none;text-align:center;font-size:.82rem;color:var(--gray-500);padding:8px;margin-bottom:12px;background:var(--gray-50);border-radius:8px">🔄 Fetching live food data...</div>
+        <button class="btn btn-primary btn-generate" id="generateBtn" style="width:100%;"><span><i class="fa-solid fa-rocket"></i></span><span>Generate Meal Plan</span></button>
+      </div>
+
+      <div class="config-card" id="existingPlanBanner" style="display:none; text-align:center; padding: 4rem 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🍽️</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 10px; color: var(--gray-800);">You already have a personalized meal plan!</h3>
+        <p style="color: var(--gray-500); margin-bottom: 25px;">Stay consistent and track your progress to reach your fitness goals.</p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="document.getElementById('statsSection').scrollIntoView({behavior:'smooth'})">View My Plan</button>
+          <a href="/nutrition.html" class="btn" style="background:var(--green-50); color:var(--green-700); font-weight:600; padding:12px 24px; border-radius:12px; text-decoration:none;">Go to Tracker</a>
+        </div>
+        <div style="margin-top: 2rem;">
+          <button class="btn" style="background: transparent; color: var(--gray-400); font-size: 0.9rem; padding: 0;" onclick="regeneratePlanPrompt()">🔁 Regenerate Plan (This will replace your existing plan)</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section page-transition" id="statsSection" style="display:none">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-wallet"></i></div><div class="stat-info"><h3 id="statBudget">₹5,000</h3><p>Monthly Budget</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-utensils"></i></div><div class="stat-info"><h3>120</h3><p>Meals Planned</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-fire"></i></div><div class="stat-info"><h3 id="statCalories">2,100</h3><p>Daily Target (kcal)</p></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div><div class="stat-info"><h3 id="statGoal">Maintenance</h3><p>Fitness Goal</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meal Plan Table -->
+  <section class="section page-transition" id="sectionMealPlan" style="display:none">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon"><i class="fa-regular fa-calendar-days"></i></span> 30-Day Meal Plan</h2>
+        <div class="week-nav" id="weekNav">
+          <button class="week-btn active" data-week="1">Week 1</button>
+          <button class="week-btn" data-week="2">Week 2</button>
+          <button class="week-btn" data-week="3">Week 3</button>
+          <button class="week-btn" data-week="4">Week 4</button>
+          <button class="week-btn" data-week="5">Day 29-30</button>
+        </div>
+      </div>
+      <div class="meal-plan-wrapper"><div class="meal-table-scroll">
+        <table class="meal-table" id="mealTable">
+          <thead><tr><th>Day</th><th>🌅 Breakfast 🍳🥣</th><th>☀️ Lunch 🍚🥘</th><th>🌙 Dinner 🫓🍛</th><th>🍎 Snacks 🍌🥜</th><th>Total Cal</th><th>Total Cost</th></tr></thead>
+          <tbody id="mealTableBody"></tbody>
+        </table>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- Alternatives -->
+  <section class="section page-transition" id="sectionAlternatives" style="display:none">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon"><i class="fa-regular fa-lightbulb"></i></span> Budget-Friendly Alternatives</h2>
+        <span class="section-badge">Low Cost • High Nutrition</span>
+      </div>
+      <p class="alt-intro">If food prices increase, swap expensive items with these cheaper alternatives while maintaining your calorie balance.</p>
+      <div class="alt-meals-grid" id="altMealsGrid"></div>
+    </div>
+  </section>
+
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand"><span><i class="fa-solid fa-leaf"></i></span><span>NutriGuide</span></div>
+      <p class="footer-text">© 2026 NutriGuide — Personalized Budget-Based Meal Planner. Powered by IFCT Data.</p>
+    </div>
+  </footer>
+
+  <div class="loader-overlay" id="fullScreenLoader" style="display:none">
+    <div class="loader-card" style="padding: 2.5rem; max-width: 400px;">
+      <div class="loader-spinner" id="loaderSpinner"></div>
+      <h2 id="loaderTitle" style="font-size: 1.3rem; margin-bottom: 8px;">⚡ Creating your personalized plan...</h2>
+      <p class="loader-subtitle" id="loaderSubtitle">This will take a moment.</p>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/mealPlan.js"></script>
+</body>
+</html>

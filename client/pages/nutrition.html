@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NutriGuide Smart Nutrition Tracker — Automated daily tracking with zero manual input.">
+  <title>NutriGuide — Smart Nutrition Tracker</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a class="navbar-brand" href="/dashboard.html">
+        <div class="navbar-logo"><i class="fa-solid fa-leaf"></i></div>
+        <div><div class="navbar-title">NutriGuide</div><div class="navbar-subtitle">Smart Nutrition Tracker</div></div>
+      </a>
+      <div class="navbar-nav" id="navLinks">
+        <a class="nav-link" href="/dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="/nutrition.html">Nutrition Tracker</a>
+      </div>
+      <div class="navbar-user">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <button class="btn-logout" id="logoutBtn">Sign Out</button>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    </div>
+  </nav>
+
+  <section class="section page-transition">
+    <div class="container">
+
+      <!-- No Plan Warning -->
+      <div class="no-profile-banner" id="noPlanBanner" style="display:none; text-align:center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🍽️</div>
+        <h3>No Meal Plan Found</h3>
+        <p>Generate your plan to start tracking your nutrition.</p>
+        <a href="/dashboard.html" class="btn btn-primary" style="max-width:300px;margin-top:1rem">Generate your plan</a>
+      </div>
+
+      <!-- Main Tracker -->
+      <div id="trackerMain" style="display:none">
+        <div class="section-header">
+          <h2 class="section-title"><span class="icon"><i class="fa-solid fa-chart-simple"></i></span> Smart Nutrition Tracker</h2>
+          <div class="nutrition-day-nav">
+            <button class="btn-sm" id="prevDayBtn" disabled>← Prev Day</button>
+            <span class="section-badge" id="dayLabel">Day 1</span>
+            <button class="btn-sm" id="nextDayBtn" disabled>Next Day →</button>
+          </div>
+        </div>
+
+        <!-- Target Info -->
+        <div class="target-info-bar" id="targetInfoBar"></div>
+
+        <!-- Active Day: Show Planned Meals (NO INPUT FIELDS) -->
+        <div id="activeDayView">
+          <div class="planned-meals-header">
+            <h3><i class="fa-solid fa-utensils"></i> Today's Planned Meals</h3>
+            <p>Follow these meals and click "Complete Day" when done. Nutrition is calculated automatically.</p>
+          </div>
+
+          <div class="meals-grid" id="mealsGrid">
+            <!-- 4 meal cards rendered by JS -->
+          </div>
+
+          <!-- Auto-calculated nutrition summary -->
+          <div class="auto-nutrition-bar" id="autoNutritionBar">
+            <!-- Filled by JS -->
+          </div>
+
+          <button class="btn-complete" id="completeDayBtn"><i class="fa-solid fa-check-circle"></i> Complete Day — Mark as Done</button>
+        </div>
+
+        <!-- Completed Day View -->
+        <div id="completedDayView" style="display:none">
+          <div class="completed-banner">
+            <div class="completed-icon"><i class="fa-solid fa-check-circle"></i></div>
+            <h3>Day <span id="completedDayNum">1</span> — Completed</h3>
+            <p>This day has been saved and locked.</p>
+          </div>
+          <div class="tracker-grid" id="completedMealsGrid">
+            <!-- Filled by JS -->
+          </div>
+          <div class="tracker-grid" style="margin-top:1rem">
+            <div class="summary-card summary-calories"><div class="summary-icon"><i class="fa-solid fa-fire"></i></div><div class="summary-value" id="sumCalories">—</div><div class="summary-label">Calories</div></div>
+            <div class="summary-card summary-protein"><div class="summary-icon"><i class="fa-solid fa-drumstick-bite"></i></div><div class="summary-value" id="sumProtein">—</div><div class="summary-label">Protein</div></div>
+            <div class="summary-card summary-carbs"><div class="summary-icon"><i class="fa-solid fa-wheat-awn"></i></div><div class="summary-value" id="sumCarbs">—</div><div class="summary-label">Carbs</div></div>
+            <div class="summary-card summary-fats"><div class="summary-icon"><i class="fa-solid fa-droplet"></i></div><div class="summary-value" id="sumFats">—</div><div class="summary-label">Fats</div></div>
+            <div class="summary-card summary-cost"><div class="summary-icon"><i class="fa-solid fa-wallet"></i></div><div class="summary-value" id="sumCost">—</div><div class="summary-label">Total Cost</div></div>
+          </div>
+        </div>
+
+        <!-- Chart (hidden until ≥1 day completed) -->
+        <div class="calorie-chart-card" id="calorieChartCard" style="display:none">
+          <h3 class="chart-title"><i class="fa-solid fa-chart-line"></i> Calorie Progress (Completed Days Only)</h3>
+          <div class="chart-container"><canvas id="calorieChart"></canvas></div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot legend-actual"></span> Actual Intake</span>
+            <span class="legend-item"><span class="legend-dot legend-target"></span> Target Calories</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand"><span><i class="fa-solid fa-leaf"></i></span><span>NutriGuide</span></div>
+      <p class="footer-text">© 2026 NutriGuide — Automated Nutrition Tracker</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/tracker.js"></script>
+</body>
+</html>
