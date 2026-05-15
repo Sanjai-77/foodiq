@@ -5,22 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="FoodIQ Dashboard — Generate personalized 30-day meal plans based on your budget and fitness goals.">
   <title>FoodIQ — Dashboard</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/premium.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/chatbot.css">
 </head>
 <body>
   <div class="toast-container" id="toastContainer"></div>
 
   <nav class="navbar" id="navbar">
     <div class="container navbar-inner">
-      <a class="navbar-brand" href="/pages/dashboard.html">
+      <a class="navbar-brand" href="dashboard.html">
         <div class="navbar-logo"><i class="fa-solid fa-leaf"></i></div>
         <div><div class="navbar-title">FoodIQ</div><div class="navbar-subtitle">Personalized Meal Planner</div></div>
       </a>
       <div class="navbar-nav" id="navLinks">
-        <a class="nav-link active" href="/pages/dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="dashboard.html">Dashboard</a>
         <a class="nav-link" href="#sectionMealPlan">Meal Plan</a>
-        <a class="nav-link" href="/pages/nutrition.html">Nutrition Tracker</a>
+        <a class="nav-link" href="nutrition.html">Nutrition Tracker</a>
+        <a class="nav-link" href="marketplace.html">Marketplace</a>
       </div>
       <div class="navbar-user">
         <div class="user-avatar" id="userAvatar">U</div>
@@ -113,7 +116,7 @@
         <p style="color: var(--gray-500); margin-bottom: 25px;">Stay consistent and track your progress to reach your fitness goals.</p>
         <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
           <button class="btn btn-primary" onclick="document.getElementById('statsSection').scrollIntoView({behavior:'smooth'})">View My Plan</button>
-          <a href="/pages/nutrition.html" class="btn" style="background:var(--green-50); color:var(--green-700); font-weight:600; padding:12px 24px; border-radius:12px; text-decoration:none;">Go to Tracker</a>
+          <a href="nutrition.html" class="btn" style="background:var(--green-50); color:var(--green-700); font-weight:600; padding:12px 24px; border-radius:12px; text-decoration:none;">Go to Tracker</a>
         </div>
         <div style="margin-top: 2rem;">
           <button class="btn" style="background: transparent; color: var(--gray-400); font-size: 0.9rem; padding: 0;" onclick="regeneratePlanPrompt()">🔁 Regenerate Plan (This will replace your existing plan)</button>
@@ -153,6 +156,11 @@
           <tbody id="mealTableBody"></tbody>
         </table>
       </div></div>
+      <div style="text-align:center; margin-top:1.5rem;">
+        <a href="marketplace.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--gradient-primary);color:#fff;text-decoration:none;border-radius:var(--radius-xl);font-weight:700;font-size:.95rem;transition:all .2s;box-shadow:0 4px 14px rgba(34,197,94,.25);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <i class="fa-solid fa-cart-shopping"></i> Shop Groceries for Your Plan
+        </a>
+      </div>
     </div>
   </section>
 
@@ -183,8 +191,9 @@
     </div>
   </div>
 
-  <script src="../js/utils.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/mealPlan.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/mealPlan.js"></script>
+  <script src="js/chatbot.js"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
     logoutBtn.addEventListener('click', () => {
       localStorage.removeItem('foodiq_token');
       localStorage.removeItem('foodiq_user');
-      window.location.href = '/pages/index.html';
+      window.location.href = 'index.html';
     });
   }
 

@@ -1,7 +1,7 @@
 {
-  "name": "nutriguide",
+  "name": "foodiq",
   "version": "1.0.0",
-  "description": "NutriGuide: Personalized Budget-Based Meal Planner with Nutrition Tracker",
+  "description": "FoodIQ: Personalized Budget-Based Meal Planner with Nutrition Tracker",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
@@ -13,9 +13,10 @@
     "tracker",
     "budget"
   ],
-  "author": "NutriGuide Team",
+  "author": "FoodIQ Team",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",

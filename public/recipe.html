@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FoodIQ — Cooking Recipe</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/premium.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/chatbot.css">
   <style>
     .recipe-container {
       max-width: 800px;
@@ -129,11 +131,11 @@
 
   <nav class="navbar" id="navbar">
     <div class="container navbar-inner">
-      <a class="navbar-brand" href="/dashboard.html">
+      <a class="navbar-brand" href="dashboard.html">
         <div class="navbar-logo"><i class="fa-solid fa-leaf"></i></div>
         <div><div class="navbar-title">FoodIQ</div><div class="navbar-subtitle">Cooking Guidance</div></div>
       </a>
-      <a href="/dashboard.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem;">← Back to Plan</a>
+      <a href="dashboard.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem;">← Back to Plan</a>
     </div>
   </nav>
 
@@ -174,9 +176,16 @@
             <div class="nut-value" id="rPro">0g</div>
           </div>
           <div class="nut-item">
-            <div class="nut-label">Estimated Cost</div>
+            <div class="nut-label">Est. Cost</div>
             <div class="nut-value" id="rCostDisplay" style="color:var(--green-600)">₹0</div>
           </div>
+        </div>
+
+        <!-- Buy Ingredients -->
+        <div style="text-align:center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid var(--gray-100);">
+          <a id="buyIngredientsBtn" href="#" style="display:inline-flex;align-items:center;gap:10px;padding:14px 32px;background:var(--gradient-primary);color:#fff;text-decoration:none;border-radius:var(--radius-xl);font-weight:700;font-size:1rem;transition:all .2s;box-shadow:0 4px 14px rgba(34,197,94,.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <i class="fa-solid fa-cart-shopping"></i> Buy Ingredients on Marketplace
+          </a>
         </div>
 
       </div>
@@ -190,8 +199,9 @@
     </div>
   </footer>
 
-  <script src="../js/utils.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/recipe.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/recipe.js"></script>
+  <script src="js/chatbot.js"></script>
 </body>
 </html>

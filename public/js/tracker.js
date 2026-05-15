@@ -1,7 +1,7 @@
 // tracker.js - Nutrition tracking logic
 
 // Auth guard
-if (!getToken()) window.location.href = '/pages/index.html';
+if (!getToken()) window.location.href = 'index.html';
 
 let currentDay = 1;
 let completedDays = [];
@@ -63,7 +63,7 @@ async function loadNutritionData() {
 
 function createMealCard(title, meal) {
   return `
-    <a href="/pages/recipe.html?name=${encodeURIComponent(meal.name)}&qty=${meal.qty}&cal=${meal.c_cal}&pro=${meal.c_pro}&cost=${meal.c_cost}" target="_blank" class="meal-cell-link">
+    <a href="recipe.html?name=${encodeURIComponent(meal.name)}&qty=${meal.qty}&cal=${meal.c_cal}&pro=${meal.c_pro}&cost=${meal.c_cost}" target="_blank" class="meal-cell-link">
       <div class="planned-meal-card">
         <div class="planned-meal-type">${title}</div>
         <div class="planned-meal-name"><i class="${meal.icon || 'fa-solid fa-utensils'}"></i> ${meal.name}</div>
@@ -187,28 +187,73 @@ function renderChart() {
   const actual = completed.map(d => d.calories);
   const target = completed.map(() => mealPlan.targetCalories);
 
+  // Create a smooth vertical gradient fill below the actual intake line
+  let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(34, 197, 94, 0.35)'); // Solid green at top
+  gradient.addColorStop(1, 'rgba(34, 197, 94, 0.0)');  // Fade out at bottom
+
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: {
       labels,
       datasets: [
         {
-          label: 'Actual Intake', data: actual,
-          borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)',
-          fill: true, tension: 0.4, pointBackgroundColor: '#22c55e', pointRadius: 6, pointHoverRadius: 8
+          label: 'Actual Intake (kcal)', 
+          data: actual,
+          borderColor: '#22c55e', 
+          backgroundColor: gradient,
+          borderWidth: 3,
+          fill: true, 
+          tension: 0.4, // Smooth, natural curves
+          pointBackgroundColor: '#ffffff', 
+          pointBorderColor: '#22c55e',
+          pointBorderWidth: 2,
+          pointRadius: 5, 
+          pointHoverRadius: 7
         },
         {
-          label: 'Target Calories', data: target,
-          borderColor: '#f59e0b', borderDash: [5, 5], fill: false, pointRadius: 0
+          label: 'Target Calories', 
+          data: target,
+          borderColor: '#f59e0b', 
+          borderDash: [6, 6], 
+          borderWidth: 2,
+          fill: false, 
+          pointRadius: 0,
+          tension: 0 // Keep the target line strictly straight
         }
       ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      responsive: true, 
+      maintainAspectRatio: false,
+      animation: {
+        y: { duration: 1200, easing: 'easeOutQuart' },
+        x: { duration: 1200, easing: 'easeOutQuart' }
+      },
+      interaction: {
+        mode: 'index',
+        intersect: false, // Tooltip shows both actual and target at same time
+      },
+      plugins: { 
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          titleFont: { size: 14, family: "'Inter', sans-serif", weight: 'bold' },
+          bodyFont: { size: 13, family: "'Inter', sans-serif" },
+          padding: 12,
+          cornerRadius: 8,
+          displayColors: true,
+          boxPadding: 4
+        }
+      },
       scales: {
-        y: { beginAtZero: false, suggestedMin: Math.max(0, mealPlan.targetCalories - 800), suggestedMax: mealPlan.targetCalories + 800 },
-        x: { grid: { display: false } }
+        y: { 
+          beginAtZero: false, 
+          grid: { color: 'rgba(0,0,0,0.06)', drawBorder: false }
+        },
+        x: { 
+          grid: { display: false, drawBorder: false } 
+        }
       }
     }
   });

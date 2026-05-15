@@ -1,0 +1,103 @@
+/* marketplace.css — FoodIQ Smart Grocery Marketplace (Clean E-Commerce) */
+
+/* ── Hero ── */
+.mp-hero{padding:2.5rem 0;background:var(--gradient-hero);position:relative;overflow:hidden}
+.mp-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(34,197,94,.12) 0%,transparent 60%);pointer-events:none}
+.mp-hero-inner{position:relative;z-index:1;text-align:center}
+.mp-title{font-size:2rem;font-weight:800;margin-bottom:6px}
+.mp-title span{background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mp-subtitle{color:var(--gray-500);font-size:1rem;margin-bottom:1.5rem}
+
+/* ── Search ── */
+.mp-search-box{max-width:600px;margin:0 auto;position:relative}
+.mp-search-input{width:100%;padding:16px 56px 16px 20px;border:2px solid var(--gray-200);border-radius:var(--radius-xl);font-size:1rem;background:#fff;color:var(--gray-900);outline:none;transition:all .2s;box-shadow:var(--shadow-lg)}
+.mp-search-input:focus{border-color:var(--green-500);box-shadow:0 0 0 4px rgba(34,197,94,.1),var(--shadow-lg)}
+.mp-search-input::placeholder{color:var(--gray-400)}
+.mp-search-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:var(--radius-md);background:var(--gradient-primary);border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mp-search-btn:hover{transform:translateY(-50%) scale(1.05);box-shadow:0 4px 12px rgba(34,197,94,.3)}
+
+/* ── Category chips ── */
+.mp-categories{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:1.2rem}
+.mp-cat-chip{padding:8px 18px;border-radius:var(--radius-full);font-size:.82rem;font-weight:600;background:#fff;color:var(--gray-700);border:1px solid var(--gray-200);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.mp-cat-chip:hover,.mp-cat-chip.active{background:var(--green-600);color:#fff;border-color:var(--green-600)}
+.mp-cat-chip span{font-size:1.1rem}
+
+/* ── Landing / Empty State ── */
+.mp-landing{text-align:center;padding:4rem 1rem 3rem}
+.mp-landing-icon{font-size:3.5rem;color:var(--green-400);margin-bottom:1rem;opacity:.7}
+.mp-landing-title{font-size:1.5rem;font-weight:800;color:var(--gray-700);margin-bottom:8px}
+.mp-landing-text{font-size:.95rem;color:var(--gray-400);margin-bottom:2rem;max-width:420px;margin-left:auto;margin-right:auto}
+.mp-trending-searches{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.mp-trending-label{font-size:.8rem;font-weight:700;color:var(--gray-500);display:flex;align-items:center;gap:5px}
+.mp-trending-label i{color:var(--accent-orange)}
+.mp-trending-chip{padding:7px 16px;border-radius:var(--radius-full);font-size:.8rem;font-weight:600;background:#fff;color:var(--gray-700);border:1px solid var(--gray-200);cursor:pointer;transition:all .2s}
+.mp-trending-chip:hover{background:var(--green-50);border-color:var(--green-400);color:var(--green-700);transform:translateY(-1px)}
+
+/* ── Toolbar ── */
+.mp-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem}
+.mp-result-count{font-size:.88rem;color:var(--gray-500);font-weight:500}
+.mp-sort-select{padding:8px 14px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.82rem;font-weight:600;color:var(--gray-700);background:#fff;cursor:pointer;outline:none}
+.mp-sort-select:focus{border-color:var(--green-400)}
+
+/* ── Sections ── */
+.mp-section{padding:1.5rem 0}
+
+/* ── Product Grid (4 → 3 → 2 → 1) ── */
+.mp-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:1rem}
+
+/* ── Product Card — Minimal ── */
+.mp-card{
+  background:#fff;
+  border:1px solid var(--gray-200);
+  border-radius:16px;
+  padding:20px 16px 16px;
+  text-align:center;
+  transition:all .25s ease;
+}
+.mp-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 12px 32px -8px rgba(0,0,0,.1);
+  border-color:var(--green-300);
+}
+.mp-card-image{
+  width:80px;height:80px;margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;background:var(--green-50);
+  border-radius:16px;border:1px solid var(--green-100);
+}
+.mp-card-name{
+  font-size:.92rem;font-weight:700;color:var(--gray-800);
+  line-height:1.3;margin-bottom:4px;min-height:2.4em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.mp-card-weight{font-size:.75rem;color:var(--gray-400);font-weight:500;margin-bottom:10px}
+.mp-card-price{font-size:1.3rem;font-weight:800;color:var(--green-700);margin-bottom:14px}
+
+/* Platform buttons — 2x2 */
+.mp-card-platforms{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mp-platform-btn{
+  padding:7px 0;border-radius:8px;font-size:.72rem;font-weight:700;
+  border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);
+  cursor:pointer;transition:all .2s;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.mp-platform-btn:hover{
+  background:var(--green-600);color:#fff;border-color:var(--green-600);
+  transform:translateY(-1px);box-shadow:0 3px 8px rgba(34,197,94,.2);
+}
+.mp-platform-btn i{font-size:.6rem}
+
+/* Empty / No results */
+.mp-empty{text-align:center;padding:3rem 1rem;color:var(--gray-400);grid-column:1/-1}
+.mp-empty i{font-size:3rem;margin-bottom:1rem;display:block}
+.mp-empty h3{font-size:1.2rem;font-weight:700;color:var(--gray-600);margin-bottom:6px}
+.mp-empty p{font-size:.9rem}
+
+/* Skeleton */
+.mp-skeleton{background:var(--gray-100);border-radius:16px;height:280px;animation:skeletonPulse 1.5s ease-in-out infinite}
+@keyframes skeletonPulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── Responsive ── */
+@media(max-width:1024px){.mp-grid{grid-template-columns:repeat(3, 1fr)}}
+@media(max-width:768px){.mp-grid{grid-template-columns:repeat(2, 1fr)}.mp-title{font-size:1.5rem}}
+@media(max-width:480px){.mp-grid{grid-template-columns:1fr}.mp-toolbar{flex-direction:column;align-items:stretch}}

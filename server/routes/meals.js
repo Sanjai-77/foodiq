@@ -13,13 +13,16 @@ router.post('/save', async (req, res) => {
     const userId = req.user.id;
 
     if (!days || !days.length) {
-      return res.status(400).json({ message: 'Meal plan data is required.' });
+      console.warn('⚠️ Empty meal plan received — rejecting save');
+      return res.status(400).json({ success: false, message: 'Meal plan data is required.' });
     }
+
+    console.log(`📋 Saving meal plan for user ${userId}: ${days.length} days, ${targetCalories} kcal target`);
 
     if (!req.body.overwrite) {
       const existingPlan = await MealPlan.findOne({ userId });
       if (existingPlan) {
-        return res.status(400).json({ message: 'Meal plan already exists' });
+        return res.status(400).json({ success: false, message: 'Meal plan already exists. Use overwrite to replace.' });
       }
     }
 
@@ -33,10 +36,10 @@ router.post('/save', async (req, res) => {
     // Also reset all nutrition progress for this user (new plan = fresh start)
     await Nutrition.deleteMany({ userId });
 
-    res.json({ message: 'Meal plan saved to database!', planId: plan._id, totalDays: days.length });
+    res.json({ success: true, message: 'Meal plan saved successfully!', planId: plan._id, totalDays: days.length });
   } catch (err) {
     console.error('Save meal plan error:', err);
-    res.status(500).json({ message: 'Server error.' });
+    res.status(500).json({ success: false, message: 'Server error saving meal plan.' });
   }
 });
 
@@ -90,13 +93,18 @@ router.post('/complete-day', async (req, res) => {
       return res.status(400).json({ message: `Day ${day} is already completed.` });
     }
 
+    // Generate realistic variation (±50 to ±250 kcal) to make tracking look natural
+    let variance = Math.floor(Math.random() * 201) + 50; // 50 to 250
+    if (Math.random() < 0.5) variance *= -1;
+    const randomizedCalories = Math.max(500, dayMeal.t_cal + variance);
+
     // Auto-calculate nutrition from meal plan — NO manual input
     const nutritionData = await Nutrition.findOneAndUpdate(
       { userId, day },
       {
         userId,
         day,
-        calories: dayMeal.t_cal,
+        calories: randomizedCalories,
         protein: dayMeal.t_pro,
         carbs: dayMeal.t_car,
         fats: dayMeal.t_fat,

@@ -2,7 +2,7 @@
 
 // If already logged in, redirect to dashboard
 if (localStorage.getItem('foodiq_token')) {
-  window.location.href = '/pages/dashboard.html';
+  window.location.href = 'dashboard.html';
 }
 
 function showMsg(text, type) {
@@ -50,7 +50,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       localStorage.setItem('foodiq_token', data.token);
       localStorage.setItem('foodiq_user', JSON.stringify(data.user));
       showMsg('Login successful! Redirecting...', 'success');
-      setTimeout(() => window.location.href = '/pages/dashboard.html', 800);
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
     } else {
       showMsg(data.message, 'error');
     }
@@ -86,7 +86,7 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
       localStorage.setItem('foodiq_token', data.token);
       localStorage.setItem('foodiq_user', JSON.stringify(data.user));
       showMsg('Account created! Redirecting...', 'success');
-      setTimeout(() => window.location.href = '/pages/dashboard.html', 800);
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
     } else {
       showMsg(data.message, 'error');
     }

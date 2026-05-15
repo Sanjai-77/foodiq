@@ -1,7 +1,7 @@
 // mealPlan.js - Meal generation, dashboard, and plan management
 
 // Auth guard
-if (!getToken()) { window.location.href = '/pages/index.html'; }
+if (!getToken()) { window.location.href = 'index.html'; }
 
 // ─── IFCT Food Database ──────────────────────────────────────
 let foodDB = { breakfast: [], lunch: [], dinner: [], snacks: [] };
@@ -50,8 +50,46 @@ async function checkExistingPlan() {
       $('sectionAlternatives').style.display = 'block';
       renderWeek(1);
     }
+    await loadUserProfile(); // Load profile to pre-fill the form for regeneration
   } catch (e) {
     console.error('Error checking plan:', e);
+  }
+}
+
+// ─── LOAD USER PROFILE TO PRE-FILL FORM ───────────────────────
+async function loadUserProfile() {
+  try {
+    const res = await fetch(`${API_BASE}/profile/me`, { headers: getHeaders() });
+    const data = await res.json();
+    if (res.ok && data.user && data.user.profile) {
+      const p = data.user.profile;
+      if (p.age) $('ageInput').value = p.age;
+      if (p.height) $('heightInput').value = p.height;
+      if (p.weight) $('weightInput').value = p.weight;
+      if (p.budget) $('budgetInput').value = p.budget;
+      
+      const setSelect = (id, val) => {
+        if (!val) return;
+        const input = $(id);
+        const wrapper = input.closest('.custom-select');
+        if (!wrapper) return;
+        const option = wrapper.querySelector(`.cs-option[data-value="${val}"]`);
+        const text = wrapper.querySelector('.cs-text');
+        if (option && text) {
+          input.value = val;
+          text.innerHTML = option.innerHTML;
+        }
+      };
+      
+      setSelect('genderSelect', p.gender);
+      setSelect('activitySelect', p.activity);
+      setSelect('goalSelect', p.goal);
+      setSelect('dietSelect', p.diet);
+      
+      calculateTarget();
+    }
+  } catch (e) {
+    console.error('Error loading profile:', e);
   }
 }
 
@@ -202,39 +240,55 @@ async function saveToMongoDB(cfg) {
 // ─── Hardcoded Fallback Dataset (emergency only) ─────────────
 const FALLBACK_DB = {
   breakfast: [
-    { name: "Oats (Raw)", kcal: 389, protein: 16.9, carbs: 66.3, fat: 6.9, price_per_kg: 200, type: "veg", icon: "fa-solid fa-bowl-rice" },
-    { name: "Poha (Dry eq)", kcal: 346, protein: 6.6, carbs: 77.3, fat: 1.2, price_per_kg: 80, type: "veg", icon: "fa-solid fa-bowl-rice" },
-    { name: "Idli Batter (Raw eq)", kcal: 148, protein: 4.5, carbs: 32, fat: 0.5, price_per_kg: 60, type: "veg", icon: "fa-solid fa-circle" }
+    { name: "Wheat Paratha (Atta)", kcal: 341, protein: 12.1, carbs: 69.4, fat: 1.7, price_per_kg: 35, type: "veg", icon: "fa-solid fa-bread-slice" },
+    { name: "Rice Porridge (Kanji)", kcal: 350, protein: 6.8, carbs: 78, fat: 0.5, price_per_kg: 40, type: "veg", icon: "fa-solid fa-bowl-rice" },
+    { name: "Upma (Semolina)", kcal: 360, protein: 10.4, carbs: 73, fat: 1, price_per_kg: 45, type: "veg", icon: "fa-solid fa-bowl-food" }
   ],
   lunch: [
-    { name: "Toor Dal (Dry eq)", kcal: 335, protein: 22.3, carbs: 57.6, fat: 1.7, price_per_kg: 160, type: "veg", icon: "fa-solid fa-bowl-food" },
-    { name: "Rajma (Dry eq)", kcal: 333, protein: 22.5, carbs: 60.6, fat: 1, price_per_kg: 180, type: "veg", icon: "fa-solid fa-seedling" },
-    { name: "Chole (Dry eq)", kcal: 364, protein: 19.3, carbs: 60, fat: 6, price_per_kg: 140, type: "veg", icon: "fa-solid fa-bowl-food" }
+    { name: "Wheat Roti + Potato Sabzi", kcal: 320, protein: 8, carbs: 62, fat: 5, price_per_kg: 30, type: "veg", icon: "fa-solid fa-bread-slice" },
+    { name: "Rice + Dal (Khichdi)", kcal: 350, protein: 12, carbs: 65, fat: 3, price_per_kg: 50, type: "veg", icon: "fa-solid fa-bowl-rice" },
+    { name: "Rice + Sambar", kcal: 340, protein: 10, carbs: 68, fat: 2.5, price_per_kg: 50, type: "veg", icon: "fa-solid fa-bowl-food" }
   ],
   dinner: [
-    { name: "Soya Chunks (Dry eq)", kcal: 345, protein: 52, carbs: 33, fat: 0.5, price_per_kg: 150, type: "veg", icon: "fa-solid fa-seedling" },
-    { name: "Mixed Veg (Raw eq)", kcal: 65, protein: 2.5, carbs: 13, fat: 0.2, price_per_kg: 40, type: "veg", icon: "fa-solid fa-leaf" },
-    { name: "Moong Dal (Dry eq)", kcal: 348, protein: 24.5, carbs: 59.9, fat: 1.2, price_per_kg: 120, type: "veg", icon: "fa-solid fa-bowl-food" }
+    { name: "Potato Curry + Roti", kcal: 300, protein: 6, carbs: 58, fat: 5, price_per_kg: 30, type: "veg", icon: "fa-solid fa-bread-slice" },
+    { name: "Dal + Rice", kcal: 340, protein: 14, carbs: 62, fat: 2.5, price_per_kg: 50, type: "veg", icon: "fa-solid fa-bowl-food" },
+    { name: "Roti + Mixed Veg", kcal: 280, protein: 8, carbs: 50, fat: 5, price_per_kg: 35, type: "veg", icon: "fa-solid fa-leaf" }
   ],
   snacks: [
-    { name: "Roasted Chana", kcal: 369, protein: 22.5, carbs: 58.1, fat: 5.2, price_per_kg: 120, type: "veg", icon: "fa-solid fa-seedling" },
-    { name: "Banana", kcal: 89, protein: 1.1, carbs: 22.8, fat: 0.3, price_per_kg: 60, type: "veg", icon: "fa-solid fa-apple-whole" },
-    { name: "Peanuts (Raw)", kcal: 567, protein: 25.8, carbs: 16.1, fat: 49.2, price_per_kg: 160, type: "veg", icon: "fa-solid fa-seedling" }
+    { name: "Banana", kcal: 89, protein: 1.1, carbs: 22.8, fat: 0.3, price_per_kg: 40, type: "veg", icon: "fa-solid fa-apple-whole" },
+    { name: "Murmura (Puffed Rice)", kcal: 325, protein: 5.5, carbs: 77, fat: 0.5, price_per_kg: 50, type: "veg", icon: "fa-solid fa-bowl-rice" },
+    { name: "Roasted Chana", kcal: 369, protein: 22.5, carbs: 58.1, fat: 5.2, price_per_kg: 100, type: "veg", icon: "fa-solid fa-seedling" }
   ]
 };
+
+// ─── Sort foods by kcal-per-rupee efficiency ─────────────────
+function sortByEfficiency(arr) {
+  return [...arr].sort((a, b) => (b.kcal / b.price_per_kg) - (a.kcal / a.price_per_kg));
+}
+
+// ─── Pick a budget-aware food item ───────────────────────────
+function pickBudgetAware(db, prevName, isLowBudget) {
+  if (isLowBudget) {
+    // For low budgets: pick from top 3 cheapest items (with variety)
+    const sorted = sortByEfficiency(db);
+    const topN = sorted.slice(0, Math.min(3, sorted.length));
+    const filtered = topN.filter(item => item.name !== prevName);
+    if (filtered.length > 0) return filtered[Math.floor(Math.random() * filtered.length)];
+    return topN[Math.floor(Math.random() * topN.length)];
+  }
+  return pickNoRepeat(db, prevName);
+}
 
 // ─── Generate 30-Day Plan (NEVER FAILS) ──────────────────────
 async function generatePlan() {
   const cfg = calculateTarget();
   if (!cfg) { showToast('Please fill all fields first', 'error'); return; }
 
-  // Soft-validate inputs — use sensible defaults instead of crashing
   if (!cfg.weight) cfg.weight = 70;
   if (!cfg.height) cfg.height = 170;
   if (!cfg.budget) cfg.budget = 5000;
   console.log("📋 User Input:", JSON.stringify(cfg));
 
-  // Ensure dataset exists — use fallback if server data is missing
   let activeDB = foodDB;
   if (!foodDB || !foodDB.breakfast.length || !foodDB.lunch.length || !foodDB.dinner.length || !foodDB.snacks.length) {
     console.warn("⚠️ Food dataset not loaded from server, using fallback dataset...");
@@ -243,18 +297,17 @@ async function generatePlan() {
   }
 
   const { targetCal, targetProtein, dailyBudget, diet } = cfg;
+  const isLowBudget = dailyBudget < 50; // ₹1500/month or less
 
-  // Relaxed budget filtering — allow 1.2x flexibility
   let budgetModeStr = '';
-  let allowedMaxPrice = Infinity;
-  if (dailyBudget < 100) { budgetModeStr = 'Low Budget Mode 💸'; allowedMaxPrice = 120 * 1.2; }
-  else if (dailyBudget < 250) { budgetModeStr = 'Balanced Mode ⚖️'; allowedMaxPrice = 300 * 1.2; }
+  if (dailyBudget < 25) { budgetModeStr = 'Ultra Budget Mode 💸'; }
+  else if (dailyBudget < 100) { budgetModeStr = 'Low Budget Mode 💸'; }
+  else if (dailyBudget < 250) { budgetModeStr = 'Balanced Mode ⚖️'; }
   else { budgetModeStr = 'High Nutrition Mode 🍗'; }
 
   $('statBudget').textContent = `₹${Math.round(dailyBudget * 30).toLocaleString()}`;
   $('statCalories').textContent = targetCal.toLocaleString();
 
-  // Safe goal text extraction (handles both <select> and hidden input)
   let goalText = 'Fitness';
   const goalEl = $('goalSelect');
   if (goalEl && goalEl.options && goalEl.selectedIndex >= 0) {
@@ -267,58 +320,86 @@ async function generatePlan() {
   mealPlan = [];
   let budgetAltsUsed = [];
 
-  // Safe filter with 1.2x budget flexibility + absolute fallback
-  const safeFilter = (dbArr, maxPrice) => {
-    let filtered = filterDiet(dbArr, diet).filter(i => i.price_per_kg <= maxPrice);
+  // For low budgets, filter by price; for others, allow all
+  const maxPriceFilter = isLowBudget ? 150 : Infinity;
+  const safeFilter = (dbArr) => {
+    let filtered = filterDiet(dbArr, diet).filter(i => i.price_per_kg <= maxPriceFilter);
     if (!filtered.length) { filtered = filterDiet(dbArr, diet); }
     if (!filtered.length) { filtered = dbArr; }
     return filtered;
   };
 
-  const bDB = safeFilter(activeDB.breakfast, allowedMaxPrice);
-  const lDB = safeFilter(activeDB.lunch, allowedMaxPrice);
-  const dDB = safeFilter(activeDB.dinner, allowedMaxPrice);
-  const sDB = safeFilter(activeDB.snacks, allowedMaxPrice);
+  const bDB = safeFilter(activeDB.breakfast);
+  const lDB = safeFilter(activeDB.lunch);
+  const dDB = safeFilter(activeDB.dinner);
+  const sDB = safeFilter(activeDB.snacks);
 
   console.log("🍽️ Filtered Foods — B:", bDB.length, "L:", lDB.length, "D:", dDB.length, "S:", sDB.length);
 
+  // Calorie split: breakfast 25%, lunch 35%, dinner 25%, snack 15%
+  const calSplit = { b: 0.25, l: 0.35, d: 0.25, s: 0.15 };
   let prevB = '', prevL = '', prevD = '', prevS = '';
 
   for (let d = 1; d <= 30; d++) {
-    let b = { ...pickNoRepeat(bDB, prevB) };
-    let l = { ...pickNoRepeat(lDB, prevL) };
-    let din = { ...pickNoRepeat(dDB, prevD) };
-    let s = { ...pickNoRepeat(sDB, prevS) };
+    let b = { ...pickBudgetAware(bDB, prevB, isLowBudget) };
+    let l = { ...pickBudgetAware(lDB, prevL, isLowBudget) };
+    let din = { ...pickBudgetAware(dDB, prevD, isLowBudget) };
+    let s = { ...pickBudgetAware(sDB, prevS, isLowBudget) };
     prevB = b.name; prevL = l.name; prevD = din.name; prevS = s.name;
 
-    b.qty = Math.round(((targetCal * 0.25) / b.kcal) * 100);
-    l.qty = Math.round(((targetCal * 0.35) / l.kcal) * 100);
-    din.qty = Math.round(((targetCal * 0.25) / din.kcal) * 100);
-    s.qty = Math.round(((targetCal * 0.15) / s.kcal) * 100);
-    let dayCost = (b.price_per_kg * b.qty / 1000) + (l.price_per_kg * l.qty / 1000) + (din.price_per_kg * din.qty / 1000) + (s.price_per_kg * s.qty / 1000);
+    // Step 1: Calculate ideal portions based on calorie targets
+    b.qty = Math.round(((targetCal * calSplit.b) / b.kcal) * 100);
+    l.qty = Math.round(((targetCal * calSplit.l) / l.kcal) * 100);
+    din.qty = Math.round(((targetCal * calSplit.d) / din.kcal) * 100);
+    s.qty = Math.round(((targetCal * calSplit.s) / s.kcal) * 100);
 
-    const applyAlt = (m, db, cal) => {
-      if (replacements[m.name]) {
-        let a = db.find(x => x.name === replacements[m.name].name);
-        if (a) { let alt = { ...a }; alt.qty = Math.round((cal / alt.kcal) * 100); budgetAltsUsed.push(replacements[m.name].diff); return alt; }
-      }
-      // If no named replacement, pick the cheapest item in category
-      const cheapest = [...db].sort((a, b) => a.price_per_kg - b.price_per_kg)[0];
-      if (cheapest && cheapest.price_per_kg < m.price_per_kg) {
-        let alt = { ...cheapest }; alt.qty = Math.round((cal / alt.kcal) * 100);
-        budgetAltsUsed.push(`Swapped ${m.name} for ${alt.name} (cheaper option)`);
-        return alt;
-      }
-      return m;
-    };
+    // Step 2: Calculate total cost at ideal portions
+    let dayCost = [b, l, din, s].reduce((sum, m) => sum + (m.price_per_kg * m.qty / 1000), 0);
 
-    if (dayCost > dailyBudget * 1.2) {
-      b = applyAlt(b, bDB, targetCal * 0.25);
-      l = applyAlt(l, lDB, targetCal * 0.35);
-      din = applyAlt(din, dDB, targetCal * 0.25);
-      s = applyAlt(s, sDB, targetCal * 0.15);
+    // Step 3: If over budget, scale portions down proportionally to fit budget
+    if (dayCost > dailyBudget && dailyBudget > 0) {
+      // First try swapping to cheapest items in each category
+      const getCheapest = (db, meal) => {
+        const sorted = sortByEfficiency(db);
+        if (sorted[0] && sorted[0].price_per_kg < meal.price_per_kg) {
+          budgetAltsUsed.push(`Swapped ${meal.name} → ${sorted[0].name} (better value)`);
+          return { ...sorted[0] };
+        }
+        return meal;
+      };
+      b = getCheapest(bDB, b);
+      l = getCheapest(lDB, l);
+      din = getCheapest(dDB, din);
+      s = getCheapest(sDB, s);
+
+      // Recalculate portions for new items
+      b.qty = Math.round(((targetCal * calSplit.b) / b.kcal) * 100);
+      l.qty = Math.round(((targetCal * calSplit.l) / l.kcal) * 100);
+      din.qty = Math.round(((targetCal * calSplit.d) / din.kcal) * 100);
+      s.qty = Math.round(((targetCal * calSplit.s) / s.kcal) * 100);
+
+      // Recalculate cost
+      dayCost = [b, l, din, s].reduce((sum, m) => sum + (m.price_per_kg * m.qty / 1000), 0);
+
+      // If still over budget, scale all portions down to fit, 
+      // BUT never compromise calories below 90% of target (prevent starvation).
+      if (dayCost > dailyBudget) {
+        const scale = dailyBudget / dayCost;
+        if (scale >= 0.9) {
+          b.qty = Math.max(30, Math.round(b.qty * scale));
+          l.qty = Math.max(40, Math.round(l.qty * scale));
+          din.qty = Math.max(30, Math.round(din.qty * scale));
+          s.qty = Math.max(20, Math.round(s.qty * scale));
+        } else {
+          const warnMsg = "Budget too low to maintain calories! Showing absolute cheapest possible meals.";
+          if (!budgetAltsUsed.includes(warnMsg)) {
+            budgetAltsUsed.push(warnMsg);
+          }
+        }
+      }
     }
 
+    // Step 4: Compute final nutrition values
     const mv = m => ({
       ...m,
       c_cal: Math.round(m.kcal * m.qty / 100),
@@ -336,13 +417,17 @@ async function generatePlan() {
     mealPlan.push(dm);
   }
 
-  // FINAL SAFETY — meal plan must NEVER be empty
   if (!mealPlan || mealPlan.length === 0) {
     console.error("⚠️ Plan generation produced 0 days — building emergency fallback...");
     mealPlan = generateFallbackPlan(cfg);
   }
 
   console.log("✅ Generated Plan:", mealPlan.length, "days");
+  if (isLowBudget) {
+    const avgCost = Math.round(mealPlan.reduce((s, d) => s + d.t_cost, 0) / mealPlan.length);
+    const avgCal = Math.round(mealPlan.reduce((s, d) => s + d.t_cal, 0) / mealPlan.length);
+    console.log(`💰 Avg daily cost: ₹${avgCost}, Avg daily cal: ${avgCal}`);
+  }
 
   await saveToMongoDB(cfg);
   renderWeek(1);
@@ -425,8 +510,17 @@ $('generateBtn').addEventListener('click', async () => {
 });
 
 // ─── Render Helpers ──────────────────────────────────────────
-function formatCell(m) {
-  return `<a href="/pages/recipe.html?name=${encodeURIComponent(m.name)}&qty=${m.qty}&cal=${m.c_cal}&pro=${m.c_pro}&cost=${m.c_cost}" target="_blank" class="meal-cell-link"><div class="meal-cell"><div class="meal-cell-name"><i class="${m.icon}"></i> ${m.name}</div><div class="meal-cell-detail">${m.qty}g • ${m.c_cal} kcal • ₹${m.c_cost}</div></div></a>`;
+function formatCell(m, day, type) {
+  return `
+    <div style="position: relative;">
+      <a href="recipe.html?name=${encodeURIComponent(m.name)}&qty=${m.qty}&cal=${m.c_cal}&pro=${m.c_pro}&cost=${m.c_cost}" target="_blank" class="meal-cell-link" style="display:block; width: 100%;">
+        <div class="meal-cell" style="padding-right: 30px;">
+          <div class="meal-cell-name"><i class="${m.icon}"></i> ${m.name}</div>
+          <div class="meal-cell-detail">${m.qty}g • ${m.c_cal} kcal • ₹${m.c_cost}</div>
+        </div>
+      </a>
+      <button onclick="regenerateSingleMeal(${day}, '${type}')" title="Swap Meal" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--gray-500); transition: 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'; this.style.color='var(--primary-600)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'; this.style.color='var(--gray-500)'"><i class="fa-solid fa-arrows-rotate" style="font-size: 12px;"></i></button>
+    </div>`;
 }
 
 function renderWeek(week) {
@@ -434,11 +528,69 @@ function renderWeek(week) {
   tbody.innerHTML = '';
   for (let i = start; i < end; i++) {
     const m = mealPlan[i]; const tr = document.createElement('tr');
-    tr.innerHTML = `<td><strong>Day ${m.day}</strong></td><td>${formatCell(m.breakfast)}</td><td>${formatCell(m.lunch)}</td><td>${formatCell(m.dinner)}</td><td>${formatCell(m.snack)}</td><td><span class="tag tag-protein">${m.t_cal} kcal</span></td><td><span class="tag tag-budget">₹${m.t_cost}</span></td>`;
+    tr.innerHTML = `<td><strong>Day ${m.day}</strong></td>
+      <td>${formatCell(m.breakfast, m.day, 'breakfast')}</td>
+      <td>${formatCell(m.lunch, m.day, 'lunch')}</td>
+      <td>${formatCell(m.dinner, m.day, 'dinner')}</td>
+      <td>${formatCell(m.snack, m.day, 'snack')}</td>
+      <td><span class="tag tag-protein">${m.t_cal} kcal</span></td>
+      <td><span class="tag tag-budget">₹${m.t_cost}</span></td>`;
     tbody.appendChild(tr);
   }
   document.querySelectorAll('.week-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.week) === week));
 }
+
+window.regenerateSingleMeal = async function(day, type) {
+  const mealIndex = mealPlan.findIndex(m => m.day === day);
+  if (mealIndex === -1) return;
+  const dm = mealPlan[mealIndex];
+  const cfg = calculateTarget() || { targetCal: 2000, dailyBudget: 5000, diet: 'veg' };
+  
+  const isLowBudget = cfg.dailyBudget < 50;
+  const calSplit = { 'breakfast': 0.25, 'lunch': 0.35, 'dinner': 0.25, 'snack': 0.15 };
+  const dbKey = type === 'snack' ? 'snacks' : type;
+  
+  let dbArr = (foodDB && foodDB[dbKey] && foodDB[dbKey].length) ? foodDB[dbKey] : FALLBACK_DB[dbKey];
+  // Re-apply diet filter locally
+  dbArr = filterDiet(dbArr, cfg.diet);
+  if (!dbArr.length) dbArr = (foodDB && foodDB[dbKey]) ? foodDB[dbKey] : FALLBACK_DB[dbKey];
+  
+  let newFood = { ...pickBudgetAware(dbArr, dm[type].name, isLowBudget) };
+  newFood.qty = Math.round(((cfg.targetCal * calSplit[type]) / newFood.kcal) * 100);
+  
+  // Scale down if extremely low budget (anti-starvation logic)
+  const maxCostForMeal = cfg.dailyBudget > 0 ? (cfg.dailyBudget * calSplit[type]) : Infinity;
+  const newCost = (newFood.price_per_kg * newFood.qty) / 1000;
+  if (newCost > maxCostForMeal && cfg.dailyBudget > 0) {
+    const scale = maxCostForMeal / newCost;
+    if (scale >= 0.9) {
+      newFood.qty = Math.max(20, Math.round(newFood.qty * scale));
+    }
+  }
+  
+  const mv = m => ({
+    ...m,
+    c_cal: Math.round(m.kcal * m.qty / 100),
+    c_pro: Math.round(m.protein * m.qty / 100),
+    c_car: Math.round(m.carbs * m.qty / 100),
+    c_fat: Math.round(m.fat * m.qty / 100),
+    c_cost: Math.round(m.price_per_kg * m.qty / 1000)
+  });
+  
+  dm[type] = mv(newFood);
+  dm.t_cal = dm.breakfast.c_cal + dm.lunch.c_cal + dm.dinner.c_cal + dm.snack.c_cal;
+  dm.t_cost = dm.breakfast.c_cost + dm.lunch.c_cost + dm.dinner.c_cost + dm.snack.c_cost;
+  dm.t_pro = dm.breakfast.c_pro + dm.lunch.c_pro + dm.dinner.c_pro + dm.snack.c_pro;
+  dm.t_car = dm.breakfast.c_car + dm.lunch.c_car + dm.dinner.c_car + dm.snack.c_car;
+  dm.t_fat = dm.breakfast.c_fat + dm.lunch.c_fat + dm.dinner.c_fat + dm.snack.c_fat;
+  
+  renderWeek(Math.ceil(day / 7));
+  showToast(`Swapped ${type} for Day ${day}!`, 'success');
+  
+  // Save changes silently
+  overwritePlan = true;
+  await saveToMongoDB(cfg);
+};
 
 $('weekNav').addEventListener('click', e => {
   if (e.target.classList.contains('week-btn')) renderWeek(parseInt(e.target.dataset.week));
